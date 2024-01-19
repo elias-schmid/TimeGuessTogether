@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "TimeGuessTogether",
+    "description": "Play TimeGuessr with your friends",
+    "version": "1.0",
+    "action": {
+      "default_popup": "popup/index.html"
+    },
+    "content_scripts": [
+        {
+          "js": ["scripts/content.js"],
+          "matches": [
+            "https://timeguessr.com/*"
+          ]
+        }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": ["activeTab"]
+  }
