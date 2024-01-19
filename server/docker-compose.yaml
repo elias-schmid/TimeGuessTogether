@@ -1,0 +1,10 @@
+version: "3.1"
+
+services:
+  app:
+    container_name: TimeGuessTogether-Server
+    build:
+      context: .
+    image: timeguesstogether_server_image
+    ports:
+      - 12444:443
