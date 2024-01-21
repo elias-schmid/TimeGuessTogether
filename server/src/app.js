@@ -12,8 +12,9 @@ const options = {
 
 app.use(express.json());
 
-app.all('/', (req, res) => {
-  // TODO
+app.get('/api/hostParty', (req, res) => {
+  var code = "test";
+  res.send({success: true, data: {party_code: code}});
 });
 
 https.createServer(options, app).listen(port, () => {
