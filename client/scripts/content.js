@@ -18,7 +18,7 @@ function loadPartyPage() {
     hostPartyElement.addEventListener("click", () => {hostParty();})
     var joinPartyElement = document.createElement("a");
     joinPartyElement.innerHTML = "Join existing Party";
-    hostPartyElement.addEventListener("click", () => {joinParty();})
+    joinPartyElement.addEventListener("click", () => {joinParty();})
 
     linksWrap.innerHTML = "";
     
@@ -29,11 +29,7 @@ function loadPartyPage() {
 }
 
 function hostParty() {
-    if(getCookieValue("party_server") === null) {
-        document.cookie = `party_server=${prompt("Enter Party Server", "Format: https://<domain>:<port>")}`;
-    }
-
-    var server_url = getCookieValue("party_server");
+    var server_url = getPartyServer();
 
     var party_code = "";
     fetch(server_url+"/api/hostParty", {
@@ -51,10 +47,30 @@ function hostParty() {
 }
 
 function joinParty() {
+    var server_url = getPartyServer();
+    var party_code = prompt("Enter Party Code:");
 
+    game_link = "";
+    fetch(server_url+"/api/joinParty", {
+        method: 'post',
+        body: JSON.stringify({"party_code": party_code}),
+        mode: 'cors',
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        })
+    })
+    .then(response => response.json())
+    .then(json => game_link = json.data.game_link);
+
+    window.location = game_link;
 }
 
-function getCookieValue(cookie) {
-    re = new RegExp(`^(?:.*;)?\\s*${cookie}\\s*=\\s*([^;]+)(?:.*)?$`);
-    return (document.cookie.match(re)||[,null])[1];
+function getPartyServer() {
+    var cookie_name = "party_server";
+    var re = new RegExp(`^(?:.*;)?\\s*${cookie_name}\\s*=\\s*([^;]+)(?:.*)?$`);
+    var value = (document.cookie.match(re)||[,null])[1];
+    if(value === null) {
+        document.cookie = `${cookie_name}=${prompt("Enter Party Server", "Format: https://<domain>:<port>")}`;
+    }
+    return value;
 }
