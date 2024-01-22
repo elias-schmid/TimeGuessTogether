@@ -3,8 +3,11 @@ version: "3.1"
 services:
   app:
     container_name: TimeGuessTogether-Server
+    volumes:
+      - ${FULLCHAIN_PATH}:/app/cert.crt
+      - ${PRIVATE_KEY_PATH}:/app/private.key
     build:
       context: .
     image: timeguesstogether_server_image
     ports:
-      - 12444:443
+      - 11444:11444
