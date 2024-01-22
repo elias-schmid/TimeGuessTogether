@@ -12,12 +12,12 @@ const options = {
 
 app.use(express.json());
 
-app.get('/api/hostParty', (req, res) => {
+app.all('/api/hostParty', (req, res) => {
   var code = "test";
   res.set({
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Headers': 'content-type',
-    'Access-Control-Allow-Methods': 'GET',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Methods': 'GET,OPTIONS',
     'Access-Control-Allow-Origin': '*',
   });
   res.send({success: true, data: {party_code: code}});
