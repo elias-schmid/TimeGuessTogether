@@ -23,6 +23,10 @@ app.all('/api/hostParty', (req, res) => {
   res.send({success: true, data: {party_code: code}});
 });
 
+app.post('/api/joinParty', (req, res) => {
+  var code = req.get('party_code');
+})
+
 https.createServer(options, app).listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
