@@ -94,7 +94,7 @@ function socketConnectClient(code) {
     const socket = new WebSocket("wss://" + getPartyServer());
 
     socket.addEventListener("open", (event) => {
-        socket.send(JSON.stringify({host: false, code: code, name: "anonymus"}));
+        socket.send(JSON.stringify({host: false, code: code, name: getName()}));
     });
 
     socket.addEventListener('message', (event) => {
@@ -139,4 +139,17 @@ function getPartyServer() {
         document.cookie = value;
     }
     return value;
+}
+
+function getName() {
+    var login_name = document.getElementsByClassName("loginText");
+    if(login_name.length == 0) {
+        return "Anonymus";
+    } else {
+        login_name = login_name[0].innerHTML;
+        if(login_name == "Create Account") {
+            return "Anonymus";
+        }
+        return login_name;
+    }
 }
