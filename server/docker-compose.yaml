@@ -11,3 +11,4 @@ services:
     image: timeguesstogether_server_image
     ports:
       - 11444:11444
+    restart: always
