@@ -31,7 +31,6 @@ function loadPartyPage() {
 function hostParty() {
     var server_url = getPartyServer();
 
-    var party_code = "";
     fetch(server_url+"/api/hostParty", {
         method: 'get',
         mode: 'cors',
@@ -40,10 +39,12 @@ function hostParty() {
         })
     })
     .then(response => response.json())
-    .then(json => party_code = json.data.party_code);
+    .then(json => {
+        var party_code = json.data.party_code;
+        var center_container = document.getElementsByClassName('centre')[0];
+        center_container.innerHTML = `<h1>Code: ${party_code}</h1><h2>Waiting for other Players...</h2>`;
+    });
 
-    var center_container = document.getElementsByClassName('centre')[0];
-    center_container.innerHTML = `<h1>Code: ${party_code}</h1><h2>Waiting for other Players...</h2>`;
 }
 
 function joinParty() {
