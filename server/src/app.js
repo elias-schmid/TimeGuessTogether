@@ -1,6 +1,7 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
+const WebSocket = require('ws');
 
 const app = express();
 const port = 11444;
@@ -13,7 +14,8 @@ const options = {
 app.use(express.json());
 
 app.all('/api/hostParty', (req, res) => {
-  var code = "test";
+  var code = require('crypto').randomBytes(8).toString('hex').slice(0, 6);
+
   res.set({
     'Content-Type': 'application/json',
     'Access-Control-Allow-Headers': '*',
