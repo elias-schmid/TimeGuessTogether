@@ -79,7 +79,7 @@ wss.on('connection', (ws) => {
         try {
           hosts[parent_index].socket.send(JSON.stringify({type: "client_disconnect", name: dead_client.name, id: dead_client.id}));
         } catch(error) {
-          console.log(error);
+          console.log("Not possible to send to closed connection.");
         }
   
         clients.splice(client_index, 1);
