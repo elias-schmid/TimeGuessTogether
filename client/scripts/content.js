@@ -1,5 +1,6 @@
 var partyLinkElement = document.createElement("a");
 partyLinkElement.innerHTML = "Party";
+partyLinkElement.style.cursor = "pointer";
 
 var linksWrap = document.getElementById('linksWrap');
 
@@ -17,9 +18,11 @@ partyLinkElement.addEventListener("click", function (event) {
 function loadPartyPage() {
     var hostPartyElement = document.createElement("a");
     hostPartyElement.innerHTML ="Host new Party";
+    hostPartyElement.style.cursor = "pointer";
     hostPartyElement.addEventListener("click", () => {hostParty();})
     var joinPartyElement = document.createElement("a");
     joinPartyElement.innerHTML = "Join existing Party";
+    joinPartyElement.style.cursor = "pointer";
     joinPartyElement.addEventListener("click", () => {joinParty();})
 
     linksWrap.innerHTML = "";
