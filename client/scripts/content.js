@@ -45,6 +45,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         displayInfoMessage("not a valid response from server");
                     }
                 }
+            case "openGame":
+                if(request.link !== undefined) {
+                    window.location = request.link;
+                }
         }
     }
     return true;
@@ -112,10 +116,21 @@ function loadLobbyScreen(asHost, party_code) {
     var center_container = document.getElementsByClassName('centre')[0];
     if (asHost) {
         center_container.innerHTML = `<h1>Code: ${party_code}</h1><div id="connected_clients_container"></div>`;
+        var startButton = document.createElement("a");
+        startButton.innerHTML = "Start the game";
+        startButton.style.cursor = "pointer";
+        startButton.addEventListener("click", () => {
+            sendMessageToWorker({ type: "startGame", code: party_code }, (response) => {
+                // window.location = response.link;
+            });
+        });
+        center_container.appendChild(document.createElement("br"));
+        center_container.appendChild(startButton);
+        center_container.appendChild(document.createElement("br"));
     } else {
         center_container.innerHTML = `<h1>Connected to ${party_code}!</h1><div id="connected_clients_container"></div>`;
     }
-    disconnectButton = document.createElement("button");
+    disconnectButton = document.createElement("a");
     disconnectButton.innerHTML = "Disconnect";
     disconnectButton.addEventListener('click', () => {
         sendMessageToWorker({ type: "closeConnection" });

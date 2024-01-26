@@ -38,7 +38,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             case "getServerUrl":
                 getPartyServer((response) => sendResponse({ status: "success", url: response.server_url }));
                 break;
-                
+            case "startGame":
+                if (request.code !== undefined) {
+                    startGame(sender.tab, request.code);
+                    sendResponse({ status: "success" });
+                }
+                sendResponse({ status: "error" });
         }
     }
     return true;
@@ -82,7 +87,7 @@ function socketConnectHost(tab, code) {
         activeConnections.push({tabId: tab.id, socket: socket});
 
         socket.addEventListener("open", (event) => {
-            socket.send(JSON.stringify({ host: true, code: code }));
+            socket.send(JSON.stringify({ type: "connect", host: true, code: code }));
         });
 
         socket.addEventListener('message', (event) => {
@@ -96,6 +101,11 @@ function socketConnectHost(tab, code) {
                     var index = connectedClients.findIndex((element) => element.id = msg.id);
                     connectedClients.splice(index, 1);
                     sendMessageToTab({ type: "updateConnectedClients", connectedClients: connectedClients }, tab.id);
+                    break;
+                case "game_link":
+                    if(msg.link !== undefined) {
+                        sendMessageToTab({ type: "openGame", link: msg.link }, tab.id);
+                    }
                     break;
             }
         });
@@ -116,9 +126,9 @@ function socketConnectClient(tab, code) {
         socket.addEventListener("open", (event) => {
             sendMessageToTab({ type: "getName" }, tab.id, (res) => {
                 if (res.status == "success" && res.name !== undefined) {
-                    socket.send(JSON.stringify({ host: false, code: code, name: res.name }));
+                    socket.send(JSON.stringify({ type: "connect", host: false, code: code, name: res.name }));
                 } else {
-                    socket.send(JSON.stringify({ host: false, code: code, name: "undefined" }));
+                    socket.send(JSON.stringify({ type: "connect", host: false, code: code, name: "undefined" }));
                 }
             });
         });
@@ -133,6 +143,11 @@ function socketConnectClient(tab, code) {
                     var index = connectedClients.findIndex((element) => element.id = msg.id);
                     connectedClients.splice(index, 1);
                     sendMessageToTab({ type: "updateConnectedClients", connectedClients: connectedClients }, tab.id);
+                    break;
+                case "game_link":
+                    if(msg.link !== undefined) {
+                        sendMessageToTab({ type: "openGame", link: msg.link }, tab.id);
+                    }
                     break;
             }
         });
@@ -152,6 +167,10 @@ function closeConnection(tab) {
     } else {
         console.log("Connection not found.")
     }
+}
+
+function startGame(tab, code) {
+    activeConnections.find((t) => t.tabId == tab.id).socket.send(JSON.stringify({ type: "startGame" }));
 }
 
 function getPartyServer(callback = () => {}) {
