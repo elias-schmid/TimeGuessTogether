@@ -1,8 +1,37 @@
-var partyLinkElement = document.createElement("a");
-partyLinkElement.innerHTML = "Party";
-partyLinkElement.style.cursor = "pointer";
+if(document.location.href === "https://timeguessr.com/") {
+    var partyLinkElement = document.createElement("a");
+    partyLinkElement.innerHTML = "Party";
+    partyLinkElement.style.cursor = "pointer";
+    
+    var linksWrap = document.getElementById('linksWrap');
 
-var linksWrap = document.getElementById('linksWrap');
+    if(linksWrap !== null) {
+        linksWrap.appendChild(partyLinkElement);
+    }
+
+    partyLinkElement.addEventListener("click", function (event) {
+        // Prevent the default behavior of the link
+        event.preventDefault();
+        // Execute your function
+        loadPartyPage();
+    });
+
+    sendMessageToWorker({type: "getConnectionStatus"}, (response) => {
+        if(response.status === "success" && response.isConnected !== undefined) {
+            console.log(response);
+            if(response.isConnected && response.isHost !== undefined && response.code !== undefined) {
+                if(confirm("Active party found.\nDo you want to rejoin?")) {
+                    loadLobbyScreen(response.isHost, response.code);
+                } else {
+                    sendMessageToWorker({type: "closeConnection"});
+                }
+            }
+        }
+    });
+
+} else {
+    console.log(document.location.href);
+}
 
 function sendMessageToWorker(message, responseCallback = undefined) {
     chrome.runtime.sendMessage(message, function (response) {
@@ -55,16 +84,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
 });
 
-if(linksWrap !== null) {
-    linksWrap.appendChild(partyLinkElement);
-}
-
-partyLinkElement.addEventListener("click", function (event) {
-    // Prevent the default behavior of the link
-    event.preventDefault();
-    // Execute your function
-    loadPartyPage();
-});
 
 function loadPartyPage() {
     var serverUrlInput = document.createElement("input");

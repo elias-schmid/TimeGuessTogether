@@ -43,6 +43,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     sendResponse({ status: "success" });
                 }
                 sendResponse({ status: "error" });
+                break;
+            case "getConnectionStatus":
+                var connection = activeConnections.find((conn) => sender.tab.id == conn.tabId);
+                if(connection !== undefined) {
+                    sendResponse({ status: "success", isConnected: true, code: connection.code, isHost: connection.isHost });
+                } else {
+                    sendResponse({ status: "success", isConnected: false});
+                }
+                break;
         }
     }
     return true;
@@ -83,7 +92,7 @@ function socketConnectHost(tab, code) {
     getPartyServer((partyserver) => {
         const socket = new WebSocket("wss://" + partyserver.server_url);
 
-        activeConnections.push({tabId: tab.id, socket: socket});
+        activeConnections.push({tabId: tab.id, socket: socket, code: code, isHost: true});
 
         socket.addEventListener("open", (event) => {
             socket.send(JSON.stringify({ type: "connect", host: true, code: code }));
@@ -125,7 +134,7 @@ function socketConnectClient(tab, code) {
             socket.close();
         });
 
-        activeConnections.push({tabId: tab.id, socket: socket});
+        activeConnections.push({tabId: tab.id, socket: socket, code: code, isHost: false});
     
         socket.addEventListener("open", (event) => {
             sendMessageToTab({ type: "getName" }, tab.id, (res) => {
@@ -169,9 +178,9 @@ function socketConnectClient(tab, code) {
 function closeConnection(tab) {
     var connection = activeConnections.find((conn) => conn.tabId == tab.id);
     if(connection !== undefined) {
-        connection.socket.close()
+        connection.socket.close();
     } else {
-        console.log("Connection not found.")
+        console.log("Connection not found.");
     }
 }
 
