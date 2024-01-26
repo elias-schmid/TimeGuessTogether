@@ -38,12 +38,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 break;
             case "displayInfoMessage":
                 if (request.message !== undefined) {
-                    sanitizeRegex = /^(\s|\w|\d|<br>)*?$/ 
+                    sanitizeRegex = /^(\s|\w|\d|<br>)*?$/;
                     if(sanitizeRegex.test(request.message)) {
                         displayInfoMessage(request.message);
                     } else {
-                        displayInfoMessage("not a valid response from server");
+                        displayInfoMessage("info message conatins illegal characters");
                     }
+                    sendResponse({ status: "success", name: getName() });
                 }
             case "openGame":
                 if(request.link !== undefined) {
@@ -69,7 +70,6 @@ function loadPartyPage() {
     var serverUrlInput = document.createElement("input");
     serverUrlInput.type = "text";
     serverUrlInput.addEventListener('change', () => {
-        console.log("test");
         sendMessageToWorker({ type: "setServerUrl", url: serverUrlInput.value }, (res) => {
             if(res.status == "success") {
                 displayInfoMessage("saved.", 200);
@@ -122,9 +122,7 @@ function loadLobbyScreen(asHost, party_code) {
         startButton.innerHTML = "Start the game";
         startButton.style.cursor = "pointer";
         startButton.addEventListener("click", () => {
-            sendMessageToWorker({ type: "startGame", code: party_code }, (response) => {
-                // window.location = response.link;
-            });
+                sendMessageToWorker({ type: "startGame", code: party_code });
         });
         center_container.appendChild(document.createElement("br"));
         center_container.appendChild(startButton);
