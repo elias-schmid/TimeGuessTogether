@@ -22,7 +22,7 @@ var client_id_ctr = 0;
 app.use(express.json());
 
 app.all('/api/hostParty', (req, res) => {
-    var code = require('crypto').randomBytes(8).toString('hex').slice(0, 6);
+    var code = require('crypto').randomBytes(8).toString('hex').slice(0, 4);
 
     res.set({
         'Content-Type': 'application/json',
