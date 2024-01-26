@@ -1,6 +1,5 @@
 chrome.runtime.onInstalled.addListener(() => {
     // Set the action badge to the next state
-    console.log("hello");
 }
 );
 
@@ -121,6 +120,11 @@ function socketConnectClient(tab, code) {
     getPartyServer((partyserver) => {
         const socket = new WebSocket("wss://" + partyserver.server_url);
 
+        socket.addEventListener("error", (event) => {
+            sendMessageToTab({ type: "displayInfoMessage", message: "connection timed out" }, tab.id);
+            socket.close();
+        });
+
         activeConnections.push({tabId: tab.id, socket: socket});
     
         socket.addEventListener("open", (event) => {
@@ -153,7 +157,9 @@ function socketConnectClient(tab, code) {
         });
     
         socket.addEventListener('close', (event) => {
-            sendMessageToTab({ type: "disconnectMessage", isHost: false }, tab.id);
+            if(event.wasClean) {
+                sendMessageToTab({ type: "disconnectMessage", isHost: false }, tab.id);
+            }
             activeConnections.splice(activeConnections.findIndex((t) => t.tabId == tab.id), 1);
         });
     });
