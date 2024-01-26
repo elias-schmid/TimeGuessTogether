@@ -54,7 +54,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
 });
 
-linksWrap.appendChild(partyLinkElement);
+if(linksWrap !== null) {
+    linksWrap.appendChild(partyLinkElement);
+}
 
 partyLinkElement.addEventListener("click", function (event) {
     // Prevent the default behavior of the link
